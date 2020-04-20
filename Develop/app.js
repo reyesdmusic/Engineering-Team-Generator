@@ -11,77 +11,190 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
-const tomEngineer = new Engineer("Tom", "55", "tom@gmail.com", "tom@github.io");
-const calManager = new Manager("Cal", "22", "Cal@gmail.com", "88");
-const kimIntern = new Intern("Kim", "92", "kim@gmail", "FIU");
 
-
-const employeeArray = [tomEngineer, calManager, kimIntern];
-
-const basicQuestionsByRole = (role) => {
-
-    const basicQuestionsArray = [`Enter ${role}'s name:`, `Enter ${role} ID (must be a number):`, `Enter ${role} Email:`];
-
-    inquirer.prompt([
-        {
-            type: "input",
-            name: "name",
-            message: basicQuestionsArray[0],
-            validate: validateString
-        },
-        {
-            type: "input",
-            name: "id",
-            message: basicQuestionsArray[1],
-            validate: validateNumber
-        
-        },
-        {
-            type: "input",
-            name: "email",
-            message: basicQuestionsArray[2],
-            validate: validateEmail
-        }
-
-    ])
-    
-}
+const employeeArray = [];
 
 
 const newManager = () => {
 
-    basicQuestionsByRole("Manager")
-    
-    .then(response => {
-        const newManager = new Manager(response.name, response.id, response.email);
-    });
-    
-}
-
-const nextQuestion = () => {
-
     inquirer.prompt([
         {
             type: "input",
             name: "name",
-            message: basicQuestionsArray[0],
+            message: "Enter manager's name:",
             validate: validateString
         },
         {
             type: "input",
             name: "id",
-            message: basicQuestionsArray[1],
+            message: "Enter manager's ID (must be a number):",
             validate: validateNumber
         
         },
         {
             type: "input",
             name: "email",
-            message: basicQuestionsArray[2],
+            message: "Enter manager's email:",
             validate: validateEmail
+        },
+
+        {
+            type: "input",
+            name: "officeNumber",
+            message: "Enter manager's office number:",
+            validate: validateString
+        }
+
+
+
+    ])
+    
+    .then(response => {
+        const newManager = new Manager(response.name, response.id, response.email, response.officeNumber);
+
+        employeeArray.push(newManager);
+
+        nextQuestion();
+    });
+    
+}
+
+const newEngineer = () => {
+
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "name",
+            message: "Enter engineer's name:",
+            validate: validateString
+        },
+        {
+            type: "input",
+            name: "id",
+            message: "Enter engineer's ID (must be a number):",
+            validate: validateNumber
+        
+        },
+        {
+            type: "input",
+            name: "email",
+            message: "Enter engineer's email:",
+            validate: validateEmail
+        },
+
+        {
+            type: "input",
+            name: "github",
+            message: "Enter engineer's Github username:",
+            validate: validateString
         }
 
     ])
+    
+    .then(response => {
+        const newEngineer = new Engineer(response.name, response.id, response.email, response.github);
+
+        employeeArray.push(newEngineer);
+
+        nextQuestion();
+    });
+    
+}
+
+const newIntern = () => {
+
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "name",
+            message: "Enter intern's name:",
+            validate: validateString
+        },
+        {
+            type: "input",
+            name: "id",
+            message: "Enter intern's ID (must be a number):",
+            validate: validateNumber
+        
+        },
+        {
+            type: "input",
+            name: "email",
+            message: "Enter intern's email:",
+            validate: validateEmail
+        },
+
+        {
+            type: "input",
+            name: "school",
+            message: "Enter interns's school:",
+            validate: validateString
+        }
+
+
+    ])
+    
+    .then(response => {
+        const newIntern = new Intern(response.name, response.id, response.email, response.school);
+
+        employeeArray.push(newIntern);
+
+        nextQuestion();
+    });
+    
+}
+
+
+const nextQuestion = () => {
+
+    inquirer.prompt([   
+    {
+        type: "confirm",
+        name: "newMember",
+        message: "Would you like to add another team member?",
+    }
+])
+
+.then(response => {
+    if (response.newMember === true) {
+        whichEmployeeRole();
+    }
+
+    else {
+        printFile();
+    }
+})
+
+}
+
+const whichEmployeeRole = () => {
+    inquirer.prompt([   
+        {
+            type: "list",
+            name: "employeeRole",
+            message: "What is your next employee's role?",
+            choices: ["Manager", "Engineer", "Intern"]
+        }
+    ])
+    
+    .then(response => {
+        if (response.employeeRole === "Manager") {
+            newManager();
+        }
+
+        else if (response.employeeRole === "Engineer") {
+            newEngineer();
+        }
+    
+        else if (response.employeeRole === "Intern") {
+            newIntern();
+        }
+        
+        else {
+            printFile();
+        }
+    })
+
 }
 
 
@@ -95,7 +208,7 @@ const printFile = () => {
         if (err) {
             console.log(err);
         } else {
-            console.log("Success!");
+            console.log("Success! Your team.html file is in your output folder.");
         }
     });
 }
