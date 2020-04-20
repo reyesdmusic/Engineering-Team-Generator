@@ -4,6 +4,7 @@ const Intern = require("./lib/Intern");
 const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
+const joi = require("joi");
 
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
@@ -15,10 +16,77 @@ const calManager = new Manager("Cal", "22", "Cal@gmail.com", "88");
 const kimIntern = new Intern("Kim", "92", "kim@gmail", "FIU");
 
 
-
 const employeeArray = [tomEngineer, calManager, kimIntern];
 
-function runTestFile() {
+const basicQuestionsByRole = (role) => {
+
+    const basicQuestionsArray = [`Enter ${role}'s name:`, `Enter ${role} ID (must be a number):`, `Enter ${role} Email:`];
+
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "name",
+            message: basicQuestionsArray[0],
+            validate: validateString
+        },
+        {
+            type: "input",
+            name: "id",
+            message: basicQuestionsArray[1],
+            validate: validateNumber
+        
+        },
+        {
+            type: "input",
+            name: "email",
+            message: basicQuestionsArray[2],
+            validate: validateEmail
+        }
+
+    ])
+    
+}
+
+
+const newManager = () => {
+
+    basicQuestionsByRole("Manager")
+    
+    .then(response => {
+        const newManager = new Manager(response.name, response.id, response.email);
+    });
+    
+}
+
+const nextQuestion = () => {
+
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "name",
+            message: basicQuestionsArray[0],
+            validate: validateString
+        },
+        {
+            type: "input",
+            name: "id",
+            message: basicQuestionsArray[1],
+            validate: validateNumber
+        
+        },
+        {
+            type: "input",
+            name: "email",
+            message: basicQuestionsArray[2],
+            validate: validateEmail
+        }
+
+    ])
+}
+
+
+
+const printFile = () => {
 
     const thisNewTeam = render(employeeArray);
 
@@ -32,27 +100,33 @@ function runTestFile() {
     });
 }
 
-runTestFile();
 
-// Write code to use inquirer to gather information about the development team members,
-// and to create objects for each team member (using the correct classes as blueprints!)
 
-// After the user has input all employees desired, call the `render` function (required
-// above) and pass in an array containing all employee objects; the `render` function will
-// generate and return a block of HTML including templated divs for each employee!
+function validateNumber(name) {
+   let schema = joi.number().required();
+   return joi.validate(name, schema, onValidation)
+}
 
-// After you have your html, you're now ready to create an HTML file using the HTML
-// returned from the `render` function. Now write it to a file named `team.html` in the
-// `output` folder. You can use the variable `outputPath` above target this location.
-// Hint: you may need to check if the `output` folder exists and create it if it
-// does not.
+function validateEmail(name) {
+    return joi.validate(name, joi.string().email(), onValidation);
+}
 
-// HINT: each employee type (manager, engineer, or intern) has slightly different
-// information; write your code to ask different questions via inquirer depending on
-// employee type.
+function onValidation(err, val){
+    if(err) {
+        return err.message;
+    }
+    else {
+        return true;
+    }
+}
 
-// HINT: make sure to build out your classes first! Remember that your Manager, Engineer,
-// and Intern classes should all extend from a class named Employee; see the directions
-// for further information. Be sure to test out each class and verify it generates an
-// object with the correct structure and methods. This structure will be crucial in order
-// for the provided `render` function to work! ```
+function validateString(name) {
+    var schema = joi.string().required();
+    return joi.validate(name, schema, onValidation);
+}
+
+
+newManager();
+
+
+
