@@ -10,6 +10,29 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
+const tomEngineer = new Engineer("Tom", "55", "tom@gmail.com", "tom@github.io");
+const calManager = new Manager("Cal", "22", "Cal@gmail.com", "88");
+const kimIntern = new Intern("Kim", "92", "kim@gmail", "FIU");
+
+
+
+const employeeArray = [tomEngineer, calManager, kimIntern];
+
+function runTestFile() {
+
+    const thisNewTeam = render(employeeArray);
+
+
+    fs.writeFile(outputPath, thisNewTeam, function(err){
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("Success!");
+        }
+    });
+}
+
+runTestFile();
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
