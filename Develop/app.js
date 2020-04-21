@@ -5,15 +5,18 @@ const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
 const joi = require("joi");
+const render = require("./lib/htmlRenderer");
+
+//outputPath will later be passed into the writeFile function 
 
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 
-const render = require("./lib/htmlRenderer");
-
+//All the employee objects will be stored in the employeeArray
 
 const employeeArray = [];
 
+//newManager prompts the user for Manager info and then assigns those values to a new Manager object and pushes that object into the employeeArray. Afterwards, nextQuestion function is run.
 
 const newManager = () => {
 
@@ -59,6 +62,8 @@ const newManager = () => {
     
 }
 
+//newEngineer prompts the user for Engineer info and then assigns those values to a new Engineer object and pushes that object into the employeeArray. Afterwards, nextQuestion function is run.
+
 const newEngineer = () => {
 
     inquirer.prompt([
@@ -100,6 +105,8 @@ const newEngineer = () => {
     });
     
 }
+
+//newIntern prompts the user for Intern info and then assigns those values to a new Intern object and pushes that object into the employeeArray. Afterwards, nextQuestion function is run.
 
 const newIntern = () => {
 
@@ -144,6 +151,7 @@ const newIntern = () => {
     
 }
 
+//nextQuestion prompts the user to determine whether or not they'd like to add another team member. If so, it runs the whichEmployeeRole function. If not, printFile is run.
 
 const nextQuestion = () => {
 
@@ -167,6 +175,8 @@ const nextQuestion = () => {
 
 }
 
+//whichEmployeeRole determines the user's next employee's role. Then the appropriate function is run to create the Employee object.
+
 const whichEmployeeRole = () => {
     inquirer.prompt([   
         {
@@ -189,20 +199,16 @@ const whichEmployeeRole = () => {
         else if (response.employeeRole === "Intern") {
             newIntern();
         }
-        
-        else {
-            printFile();
-        }
+    
     })
 
 }
 
+//printFile renders the final HTML using the render function declared in htmlRenderer.js, taking in the employeeArray containing all the new employee objects. It assigns that HTML to thisNewTeam which is then passed into writeFile.
 
 
 const printFile = () => {
-
     const thisNewTeam = render(employeeArray);
-
 
     fs.writeFile(outputPath, thisNewTeam, function(err){
         if (err) {
@@ -213,11 +219,11 @@ const printFile = () => {
     });
 }
 
-
+//using Joi, these functions validate the prompts.
 
 function validateNumber(name) {
    let schema = joi.number().required();
-   return joi.validate(name, schema, onValidation)
+   return joi.validate(name, schema, onValidation);
 }
 
 function validateEmail(name) {
@@ -237,7 +243,6 @@ function validateString(name) {
     var schema = joi.string().required();
     return joi.validate(name, schema, onValidation);
 }
-
 
 newManager();
 
