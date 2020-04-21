@@ -16,6 +16,24 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const employeeArray = [];
 
+//welcomePrompt appears first to give the user a sense of what to expect from the app. Once, they hit enter, newManager function is run.
+
+const welcomePrompt = () => {
+
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "name",
+            message: "Welcome! This app will generate a professional Engineering Team Profile page using your input. There must be at least one manager, so you'll be prompted for that first. Add as many employees as you'd like. When you have no more employees to add, you'll find your team.html in the output folder. Let's begin! Press enter to continue."
+            
+        },])
+        .then(response => {
+           
+            newManager();
+        });
+    }
+
+
 //newManager prompts the user for Manager info and then assigns those values to a new Manager object and pushes that object into the employeeArray. Afterwards, nextQuestion function is run.
 
 const newManager = () => {
@@ -244,7 +262,7 @@ function validateString(name) {
     return joi.validate(name, schema, onValidation);
 }
 
-newManager();
+welcomePrompt();
 
 
 
